@@ -1,0 +1,380 @@
+===================
+		Phase 6
+===================
+
+Move the breakpoint from commands file to 0x8048b01, the beginning of phase_6.
+
+Stack layout (figured afterwards):
+
+|-----------------------------------------
+| EBP + 0x8  (parameter string)
+|-----------------------------------------
+| EBP + 0x4  (return address)
+|-----------------------------------------
+| EBP
+|-----------------------------------------
+| EBP - 0x04  (6th number) v[5]
+|-----------------------------------------
+| EBP - 0x08  (5th number) v[4]
+|-----------------------------------------
+| EBP - 0x0C  (4th number) v[3]
+|-----------------------------------------
+| EBP - 0x10  (3rd number) v[2]
+|-----------------------------------------
+| EBP - 0x14  (2nd number) v[1]
+|-----------------------------------------
+| EBP - 0x18  (num array. 1st number - v[0])
+|-----------------------------------------
+| EBP - 0x1C (6th element of array v2)
+|-----------------------------------------
+|.....
+|-----------------------------------------
+| EBP - 0x30 (beginning of a second array - v2, of 6 elements)
+|-----------------------------------------
+| EBP - 0x34 (0x804b26c - head of a linked list)
+|-----------------------------------------
+| EBP - 0x38 (tmp)
+|-----------------------------------------
+| EBP - 0x3C  (y)
+|-----------------------------------------
+
+
+Dump of assembler code for function phase_6:
+   0x08048d98 <+0>:	push   ebp
+   0x08048d99 <+1>:	mov    ebp,esp
+   0x08048d9b <+3>:	sub    esp,0x4c
+   0x08048d9e <+6>:	push   edi
+   0x08048d9f <+7>:	push   esi
+   0x08048da0 <+8>:	push   ebx
+   0x08048da1 <+9>:	mov    edx,DWORD PTR [ebp+0x8]
+   0x08048da4 <+12>:	mov    DWORD PTR [ebp-0x34],0x804b26c
+   0x08048dab <+19>:	add    esp,0xfffffff8
+   0x08048dae <+22>:	lea    eax,[ebp-0x18]
+   0x08048db1 <+25>:	push   eax
+   0x08048db2 <+26>:	push   edx
+   0x08048db3 <+27>:	call   0x8048fd8 <read_six_numbers>
+   0x08048db8 <+32>:	xor    edi,edi
+   0x08048dba <+34>:	add    esp,0x10
+   0x08048dbd <+37>:	lea    esi,[esi+0x0]
+   0x08048dc0 <+40>:	lea    eax,[ebp-0x18]		--> ebp-0x18 is the first number read
+   0x08048dc3 <+43>:	mov    eax,DWORD PTR [eax+edi*4]
+   0x08048dc6 <+46>:	dec    eax
+   0x08048dc7 <+47>:	cmp    eax,0x5		--> first number, should be <= 5
+   0x08048dca <+50>:	jbe    0x8048dd1 <phase_6+57>
+   0x08048dcc <+52>:	call   0x80494fc <explode_bomb>
+   0x08048dd1 <+57>:	lea    ebx,[edi+0x1]
+   0x08048dd4 <+60>:	cmp    ebx,0x5
+   0x08048dd7 <+63>:	jg     0x8048dfc <phase_6+100>
+   0x08048dd9 <+65>:	lea    eax,[edi*4+0x0]
+   0x08048de0 <+72>:	mov    DWORD PTR [ebp-0x38],eax
+   0x08048de3 <+75>:	lea    esi,[ebp-0x18]
+   0x08048de6 <+78>:	mov    edx,DWORD PTR [ebp-0x38]
+   0x08048de9 <+81>:	mov    eax,DWORD PTR [edx+esi*1]
+   0x08048dec <+84>:	cmp    eax,DWORD PTR [esi+ebx*4]
+   0x08048def <+87>:	jne    0x8048df6 <phase_6+94>
+   0x08048df1 <+89>:	call   0x80494fc <explode_bomb>
+   0x08048df6 <+94>:	inc    ebx
+   0x08048df7 <+95>:	cmp    ebx,0x5
+   0x08048dfa <+98>:	jle    0x8048de6 <phase_6+78>
+   0x08048dfc <+100>:	inc    edi
+   0x08048dfd <+101>:	cmp    edi,0x5
+   0x08048e00 <+104>:	jle    0x8048dc0 <phase_6+40>
+   0x08048e02 <+106>:	xor    edi,edi
+   0x08048e04 <+108>:	lea    ecx,[ebp-0x18]
+   0x08048e07 <+111>:	lea    eax,[ebp-0x30]
+   0x08048e0a <+114>:	mov    DWORD PTR [ebp-0x3c],eax
+   0x08048e0d <+117>:	lea    esi,[esi+0x0]
+   0x08048e10 <+120>:	mov    esi,DWORD PTR [ebp-0x34]
+   0x08048e13 <+123>:	mov    ebx,0x1
+   0x08048e18 <+128>:	lea    eax,[edi*4+0x0]
+   0x08048e1f <+135>:	mov    edx,eax
+   0x08048e21 <+137>:	cmp    ebx,DWORD PTR [eax+ecx*1]
+   0x08048e24 <+140>:	jge    0x8048e38 <phase_6+160>
+   0x08048e26 <+142>:	mov    eax,DWORD PTR [edx+ecx*1]
+   0x08048e29 <+145>:	lea    esi,[esi+eiz*1+0x0]
+   0x08048e30 <+152>:	mov    esi,DWORD PTR [esi+0x8]
+   0x08048e33 <+155>:	inc    ebx
+   0x08048e34 <+156>:	cmp    ebx,eax
+   0x08048e36 <+158>:	jl     0x8048e30 <phase_6+152>
+   0x08048e38 <+160>:	mov    edx,DWORD PTR [ebp-0x3c]
+   0x08048e3b <+163>:	mov    DWORD PTR [edx+edi*4],esi
+   0x08048e3e <+166>:	inc    edi
+   0x08048e3f <+167>:	cmp    edi,0x5
+   0x08048e42 <+170>:	jle    0x8048e10 <phase_6+120>
+   0x08048e44 <+172>:	mov    esi,DWORD PTR [ebp-0x30]
+   0x08048e47 <+175>:	mov    DWORD PTR [ebp-0x34],esi
+   0x08048e4a <+178>:	mov    edi,0x1
+   0x08048e4f <+183>:	lea    edx,[ebp-0x30]
+   0x08048e52 <+186>:	mov    eax,DWORD PTR [edx+edi*4]
+   0x08048e55 <+189>:	mov    DWORD PTR [esi+0x8],eax
+   0x08048e58 <+192>:	mov    esi,eax
+   0x08048e5a <+194>:	inc    edi
+   0x08048e5b <+195>:	cmp    edi,0x5
+   0x08048e5e <+198>:	jle    0x8048e52 <phase_6+186>
+   0x08048e60 <+200>:	mov    DWORD PTR [esi+0x8],0x0
+   0x08048e67 <+207>:	mov    esi,DWORD PTR [ebp-0x34]
+   0x08048e6a <+210>:	xor    edi,edi
+   0x08048e6c <+212>:	lea    esi,[esi+eiz*1+0x0]
+   0x08048e70 <+216>:	mov    edx,DWORD PTR [esi+0x8]
+   0x08048e73 <+219>:	mov    eax,DWORD PTR [esi]
+   0x08048e75 <+221>:	cmp    eax,DWORD PTR [edx]
+   0x08048e77 <+223>:	jge    0x8048e7e <phase_6+230>
+   0x08048e79 <+225>:	call   0x80494fc <explode_bomb>
+   0x08048e7e <+230>:	mov    esi,DWORD PTR [esi+0x8]
+   0x08048e81 <+233>:	inc    edi
+   0x08048e82 <+234>:	cmp    edi,0x4
+   0x08048e85 <+237>:	jle    0x8048e70 <phase_6+216>
+   0x08048e87 <+239>:	lea    esp,[ebp-0x58]
+   0x08048e8a <+242>:	pop    ebx
+   0x08048e8b <+243>:	pop    esi
+   0x08048e8c <+244>:	pop    edi
+   0x08048e8d <+245>:	mov    esp,ebp
+   0x08048e8f <+247>:	pop    ebp
+   0x08048e90 <+248>:	ret    
+End of assembler dump.
+
+This phase also reads 6 numbers into a local array. With the input as "1 2 3 4 5 6",
+after the call to read_six_numbers function, we have the numbers in $ebp-0x18: 
+(gdb) x /6w $ebp-0x18
+0xbffff3e0:	0x00000001	0x00000002	0x00000003	0x00000004
+0xbffff3f0:	0x00000005	0x00000006
+
+From the annotated disassemby below, it seems that this phase has more stages, and has a very important 
+input, a linked list:
+	- stage1: check that all 6 numbers are between [1,..,6] and all different
+	- stage2: builds and arranges a second array with pointers to list elements
+	- stage3: fixes the links between elements from the input list to match the array constructed in stage2
+	- stage4: check that the elements of the linked list are in reverse sorted order.
+
+#edi = i, ebx = j;
+	i = 0
+   esi = 0
+   0x08048db8 <+32>:	xor    edi,edi
+   0x08048dba <+34>:	add    esp,0x10
+   0x08048dbd <+37>:	lea    esi,[esi+0x0]
+   
+   while (i <= 5) :
+   0x08048dc0 <+40>:	lea    eax,[ebp-0x18] --> ebp-0x18 is the first number read
+   0x08048dc3 <+43>:	mov    eax,DWORD PTR [eax+edi*4]
+   0x08048dc6 <+46>:	dec    eax
+   eax = &v1[0]
+   eax = v1[edi]
+   eax --
+   0x08048dc7 <+47>:	cmp    eax,0x5		--> all numbers should be > 0 and <= 6
+   0x08048dca <+50>:	jbe    0x8048dd1 <phase_6+57>
+   0x08048dcc <+52>:	call   0x80494fc <explode_bomb>
+
+	
+   j = i + 1
+   while j <= 5 :
+	 edx = tmp
+	 if (v[i] == v[j]):
+		explode()
+	 j += 1
+	 
+(The first stage seems to be that all elements are distinct. Update breakpoint to check 2  0x08048e02)
+ 
+   0x08048dd1 <+57>:	lea    ebx,[edi+0x1]
+   0x08048dd4 <+60>:	cmp    ebx,0x5
+   0x08048dd7 <+63>:	jg     0x8048dfc <phase_6+100>
+   0x08048dd9 <+65>:	lea    eax,[edi*4+0x0]
+   0x08048de0 <+72>:	mov    DWORD PTR [ebp-0x38],eax
+   0x08048de3 <+75>:	lea    esi,[ebp-0x18]
+   
+   0x08048de6 <+78>:	mov    edx,DWORD PTR [ebp-0x38]
+   0x08048de9 <+81>:	mov    eax,DWORD PTR [edx+esi*1]
+   0x08048dec <+84>:	cmp    eax,DWORD PTR [esi+ebx*4]
+   0x08048def <+87>:	jne    0x8048df6 <phase_6+94>
+   0x08048df1 <+89>:	call   0x80494fc <explode_bomb>
+   0x08048df6 <+94>:	inc    ebx
+   0x08048df7 <+95>:	cmp    ebx,0x5
+   0x08048dfa <+98>:	jle    0x8048de6 <phase_6+78>
+   
+   i += 1
+   0x08048dfc <+100>:	inc    edi   
+   0x08048dfd <+101>:	cmp    edi,0x5
+   0x08048e00 <+104>:	jle    0x8048dc0 <phase_6+40>
+
+      
+   // 2nd stage
+	i = 0
+	ecx = v[0]
+	eax = v2
+	y = v2
+	while i<=5 : 
+		elem = list_head
+		elem = head
+		j = 1
+		edx = i
+		if ( j < v[i] ):
+			do {
+				elem = elem.next
+				j ++
+			}while (j < v[i])
+		v2[i] = elem
+		i++
+		
+In this stage we have to arrange the values of the list elements, 
+so that we can pass stage 4 (should be in reverse order).		
+Current order:
+(gdb) printf "%08x %08x %08x %08x %08x %08x \n", *0x0804b26c, *0x0804b260, *0x0804b254, *0x0804b248, *0x0804b23c, *0x0804b230
+000000fd 000002d5 0000012d 000003e5 000000d4 000001b0 
+
+1 4 2 5 0 3
+
+This stage builds a list of pointers to elements, which is used in stage 3 and 4.
+Using the previously deduced agorithm, the input numbers (0<n<=1), 
+which mean how much we move an element, to have them in reverse order, should be:
+pos 1: 3 (head->next->next->next which is the biggest num)
+pos 2: 1 (head->next, which is the second biggest )
+pos 3: 5
+pos 4: 2
+pos 5: 0
+pos 6: 4
+
+Because of the advancing algorithm, we add 1 to the previous, and get: 4 2 6 3 1 5
+
+   0x08048e02 <+106>:	xor    edi,edi
+   0x08048e04 <+108>:	lea    ecx,[ebp-0x18]
+   0x08048e07 <+111>:	lea    eax,[ebp-0x30]
+   0x08048e0a <+114>:	mov    DWORD PTR [ebp-0x3c],eax
+   0x08048e0d <+117>:	lea    esi,[esi+0x0]
+   0x08048e10 <+120>:	mov    esi,DWORD PTR [ebp-0x34]
+   0x08048e13 <+123>:	mov    ebx,0x1
+   0x08048e18 <+128>:	lea    eax,[edi*4+0x0]
+   0x08048e1f <+135>:	mov    edx,eax
+   0x08048e21 <+137>:	cmp    ebx,DWORD PTR [eax+ecx*1]
+   0x08048e24 <+140>:	jge    0x8048e38 <phase_6+160>
+   0x08048e26 <+142>:	mov    eax,DWORD PTR [edx+ecx*1]
+   0x08048e29 <+145>:	lea    esi,[esi+eiz*1+0x0]
+   0x08048e30 <+152>:	mov    esi,DWORD PTR [esi+0x8]
+   0x08048e33 <+155>:	inc    ebx
+   0x08048e34 <+156>:	cmp    ebx,eax
+   0x08048e36 <+158>:	jl     0x8048e30 <phase_6+152>
+   0x08048e38 <+160>:	mov    edx,DWORD PTR [ebp-0x3c]
+   0x08048e3b <+163>:	mov    DWORD PTR [edx+edi*4],esi
+   0x08048e3e <+166>:	inc    edi
+   0x08048e3f <+167>:	cmp    edi,0x5
+   0x08048e42 <+170>:	jle    0x8048e10 <phase_6+120>
+   
+   // 3rd stage
+   0x08048e44 <+172>:	mov    esi,DWORD PTR [ebp-0x30]
+   0x08048e47 <+175>:	mov    DWORD PTR [ebp-0x34],esi
+
+(gdb) x /x $ebp-0x30
+0xbffff3c8:	0x0804b26c
+(gdb) x /x $ebp-0x34
+0xbffff3c4:	0x0804b26c
+(gdb) p /x $esi
+$11 = 0x804b26c
+
+   i = 1
+   esi = curr_elem = list_head
+   edx = *($ebp-0x30)  // array with list elements addresses
+   while i<= 5:
+   	// the second array contains the addresses of list elements
+   	(gdb) x/6x $ebp-0x30
+		0xbffff3c8:	0x0804b26c	0x0804b260	0x0804b254	0x0804b248
+		0xbffff3d8:	0x0804b23c	0x0804b230
+		
+		eax = &list[i]
+		curr_elem.next = eax 
+		curr_elem = eax
+		i++
+		
+
+   0x08048e4a <+178>:	mov    edi,0x1
+   0x08048e4f <+183>:	lea    edx,[ebp-0x30]
+   0x08048e52 <+186>:	mov    eax,DWORD PTR [edx+edi*4]
+   0x08048e55 <+189>:	mov    DWORD PTR [esi+0x8],eax
+   0x08048e58 <+192>:	mov    esi,eax
+   0x08048e5a <+194>:	inc    edi
+   0x08048e5b <+195>:	cmp    edi,0x5
+   0x08048e5e <+198>:	jle    0x8048e52 <phase_6+186>
+   
+   // 4th stage
+   0x08048e60 <+200>:	mov    DWORD PTR [esi+0x8],0x0
+   0x08048e67 <+207>:	mov    esi,DWORD PTR [ebp-0x34]
+   *(esi? + 8) = 0
+   
+   Looks like we have a linked list, with the head at 0x804b26c. The last pointer is NULL. 
+   The list has 6 elements.
+   
+   List element is like:
+   
+   list_el {
+   	int value; 		// 4 bytes
+   	int filler;		// 4 bytes
+   	next *list_el;
+   }
+   
+   This is confirmed by gdb:
+(gdb) x/x 0x0804b26c + 8
+0x804b274 <node1+8>:	0x0804b260
+(gdb) x/x 0x0804b260 + 8
+0x804b268 <node2+8>:	0x0804b254
+(gdb) x/x 0x0804b254 + 8
+0x804b25c <node3+8>:	0x0804b248
+(gdb) x/x 0x0804b248 + 8
+0x804b250 <node4+8>:	0x0804b23c
+(gdb) x/x 0x0804b23c + 8
+0x804b244 <node5+8>:	0x0804b230
+(gdb) x/x 0x0804b230 + 8
+0x804b238 <node6+8>:	0x00000000
+(gdb) 
+
+(To get the values that are compared:
+printf "%08x %08x %08x %08x %08x %08x \n", *0x0804b26c, *0x0804b260, *0x0804b254, *0x0804b248, *0x0804b23c, *0x0804b230
+000000fd 000002d5 0000012d 000003e5 000000d4 000001b0)
+
+   elem = 0x804b26c	// list head
+   i = 0
+   while i<=4:
+   	edx = *(esi+8)
+   	eax = *(esi)
+   	if elem < elem->next:
+   		explode_bomb()
+   	elem = elem->next
+   	i++
+
+Applying the corect ordering in stage 2, we obtain the desired list:
+1: /x *(int*)($ebp-0x3c) = 0xbffff3c8
+(gdb) p /x $esi
+$1 = 0x804b248
+(gdb) x /4x $esi
+0x804b248 <node4>:	0x000003e5	0x00000004	0x0804b260	0x0000012d
+(gdb) x /4x 0x0804b260
+0x804b260 <node2>:	0x000002d5	0x00000002	0x0804b230	0x000000fd
+(gdb) x /4x 0x0804b230
+0x804b230 <node6>:	0x000001b0	0x00000006	0x0804b254	0x000000d4
+(gdb) x /4x 0x0804b254
+0x804b254 <node3>:	0x0000012d	0x00000003	0x0804b26c	0x000002d5
+(gdb) x /4x 0x0804b26c
+0x804b26c <node1>:	0x000000fd	0x00000001	0x0804b23c	0x000003e9
+(gdb) x /4x 0x0804b23c
+0x804b23c <node5>:	0x000000d4	0x00000005	0x00000000	0x000003e5
+(gdb) 
+
+   0x08048e6a <+210>:	xor    edi,edi
+   0x08048e6c <+212>:	lea    esi,[esi+eiz*1+0x0]
+   0x08048e70 <+216>:	mov    edx,DWORD PTR [esi+0x8]
+   0x08048e73 <+219>:	mov    eax,DWORD PTR [esi]
+   0x08048e75 <+221>:	cmp    eax,DWORD PTR [edx]
+   0x08048e77 <+223>:	jge    0x8048e7e <phase_6+230>
+   0x08048e79 <+225>:	call   0x80494fc <explode_bomb>
+   0x08048e7e <+230>:	mov    esi,DWORD PTR [esi+0x8]
+   0x08048e81 <+233>:	inc    edi
+   0x08048e82 <+234>:	cmp    edi,0x4
+   0x08048e85 <+237>:	jle    0x8048e70 <phase_6+216>
+   
+   0x08048e87 <+239>:	lea    esp,[ebp-0x58]
+   0x08048e8a <+242>:	pop    ebx
+   0x08048e8b <+243>:	pop    esi
+   0x08048e8c <+244>:	pop    edi
+   0x08048e8d <+245>:	mov    esp,ebp
+   0x08048e8f <+247>:	pop    ebp
+   0x08048e90 <+248>:	ret    
+   
+   
+So the solution of phase6, constructed in stage2 of this phase is:  4 2 6 3 1 5
+
