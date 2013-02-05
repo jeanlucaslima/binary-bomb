@@ -1,0 +1,43 @@
+Difusing the bomb (6 levels + secret phase):
+Commands file: always display 10 instructions, and set breakpoints (first before phase 1, then before phase 2, ...)
+Answer file, passed as parameter to run command
+
+$ gdb -q -x commands bomb
+(gdb) run bomb-answers.txt
+
+===================
+		Phase 1
+===================
+1: x/10i $eip
+=> 0x8048a52 <main+162>:	call   0x80491fc <read_line>
+   0x8048a57 <main+167>:	add    esp,0xfffffff4
+   0x8048a5a <main+170>:	push   eax
+   0x8048a5b <main+171>:	call   0x8048b20 <phase_1>
+
+Dump of assembler code for function phase_1:
+   0x08048b20 <+0>:	push   ebp
+   0x08048b21 <+1>:	mov    ebp,esp
+   0x08048b23 <+3>:	sub    esp,0x8
+   0x08048b26 <+6>:	mov    eax,DWORD PTR [ebp+0x8]
+   0x08048b29 <+9>:	add    esp,0xfffffff8
+   0x08048b2c <+12>:	push   0x80497c0
+   0x08048b31 <+17>:	push   eax
+   0x08048b32 <+18>:	call   0x8049030 <strings_not_equal>
+   0x08048b37 <+23>:	add    esp,0x10
+   0x08048b3a <+26>:	test   eax,eax
+   0x08048b3c <+28>:	je     0x8048b43 <phase_1+35>
+   0x08048b3e <+30>:	call   0x80494fc <explode_bomb>
+   0x08048b43 <+35>:	mov    esp,ebp
+   0x08048b45 <+37>:	pop    ebp
+   0x08048b46 <+38>:	ret    
+
+Two strings are compared:
+- first one is our input string for the first phase:
+(gdb) x /x $ebp+0x8
+0xbffff440:	0x0804b680
+(gdb) x /s 0x0804b680
+0x804b680 <input_strings>:	 "test"
+
+- and second one is the password for phase_1:
+(gdb) x/s 0x80497c0
+0x80497c0:	 "Public speaking is very easy."
