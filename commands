@@ -1,0 +1,7 @@
+display /x *(int*)($ebp-0x3c)
+display /x *(int*)($ebp-0x30)
+display /x $esi
+display /x $edi
+display/5i $eip
+break *0x8048e95
+set disassembly-flavor intel
